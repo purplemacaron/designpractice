@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>디자인 연습장 — 10단계 디자인 트레이닝</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Pretendard,-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Noto Sans KR","Segoe UI",sans-serif;background:#fff;color:#111827;line-height:1.5}
+header{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;padding:18px 28px;border-bottom:1px solid #e5e7eb}
+header h1{font-size:18px;font-weight:700;letter-spacing:-.02em}
+header h1 span{color:#9ca3af;font-weight:400;margin-left:8px;font-size:13px}
+#dots{display:flex;gap:6px}
+#dots button{width:30px;height:30px;border-radius:50%;border:1px solid #e5e7eb;background:#fff;font-size:12px;font-weight:600;color:#9ca3af;cursor:pointer}
+#dots button.open{color:#111827;border-color:#111827}
+#dots button.done{background:#111827;color:#fff;border-color:#111827}
+#dots button.cur{box-shadow:0 0 0 3px #dbeafe;border-color:#2563eb}
+#dots button:disabled{cursor:not-allowed}
+main{display:grid;grid-template-columns:280px 480px 300px;gap:28px;justify-content:center;padding:28px 16px 60px}
+@media(max-width:1140px){main{grid-template-columns:minmax(0,480px)}}
+.panel h2{font-size:12px;font-weight:600;color:#9ca3af;letter-spacing:.08em;margin-bottom:8px}
+.panel section{margin-bottom:26px}
+#concept{font-size:24px;font-weight:700;letter-spacing:-.03em;margin-bottom:6px}
+#desc{font-size:14px;color:#4b5563}
+#mission{font-size:14px;background:#f9fafb;border-radius:10px;padding:12px 14px}
+#hints{font-size:13px;color:#4b5563;padding-left:18px}
+#hints li{margin-bottom:4px}
+#tray{display:flex;flex-direction:column;gap:6px}
+#tray button,#deco button{font:inherit;font-size:13px;text-align:left;padding:9px 12px;border:1px solid #e5e7eb;border-radius:8px;background:#fff;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#tray button:hover,#deco button:hover{border-color:#111827}
+#tray button:disabled{color:#d1d5db;border-style:dashed;cursor:default;border-color:#e5e7eb}
+#tray button b{font-weight:600;color:#2563eb;margin-right:6px;font-size:11px}
+#tray button:disabled b{color:#d1d5db}
+#deco{display:flex;gap:6px}
+#deco button{flex:1;text-align:center}
+#props{min-height:74px;display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;margin-bottom:12px;font-size:12px;color:#4b5563}
+#props .grp{display:flex;align-items:center;gap:4px}
+#props .sw{width:18px;height:18px;border-radius:50%;border:1px solid #d1d5db;cursor:pointer}
+#props .sw.on{box-shadow:0 0 0 2px #fff,0 0 0 4px #2563eb}
+#props .tb{font:inherit;font-size:12px;padding:4px 9px;border:1px solid #e5e7eb;border-radius:6px;background:#fff;cursor:pointer}
+#props .tb:hover{border-color:#111827}
+#stage{position:relative}
+#cv{position:relative;width:480px;height:600px;border:1px solid #e5e7eb;box-shadow:0 10px 40px rgba(17,24,39,.07);overflow:hidden;touch-action:none;transform-origin:0 0;user-select:none;-webkit-user-select:none}
+#safe{position:absolute;inset:32px;border:1px dashed rgba(148,163,184,.55);pointer-events:none;z-index:999}
+.gd{position:absolute;background:#2563eb;pointer-events:none;z-index:1000;display:none}
+#gv{width:1px;top:0;bottom:0}#gh{height:1px;left:0;right:0}
+.el{position:absolute;cursor:move;white-space:pre;line-height:1.3;letter-spacing:-.01em}
+.el.image{display:flex;align-items:center;justify-content:center;border-radius:12px;line-height:1}
+.el.button{border-radius:999px;padding:.65em 1.5em;font-weight:600;line-height:1.2}
+.el.sel{outline:1.5px solid #2563eb;outline-offset:2px}
+.el.bad{outline:2px dashed #ef4444;outline-offset:3px}
+.hd{position:absolute;right:-8px;bottom:-8px;width:12px;height:12px;background:#fff;border:1.5px solid #2563eb;border-radius:3px;cursor:nwse-resize}
+.under{display:flex;justify-content:space-between;align-items:center;margin-top:12px;font-size:12px;color:#9ca3af}
+.btn{font:inherit;font-size:14px;font-weight:600;padding:11px 18px;border-radius:10px;border:1px solid #111827;background:#111827;color:#fff;cursor:pointer}
+.btn.ghost{background:#fff;color:#111827;border-color:#e5e7eb}
+.btn:disabled{opacity:.3;cursor:not-allowed}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+#total{font-size:64px;font-weight:700;letter-spacing:-.04em;line-height:1}
+#total small{font-size:16px;color:#9ca3af;font-weight:500;margin-left:4px}
+#stars{font-size:20px;letter-spacing:4px;margin:6px 0 2px;color:#f59e0b}
+#verdict{font-size:14px;color:#4b5563;margin-bottom:6px}
+.m{padding:12px 0;border-top:1px solid #f3f4f6}
+.m .top{display:flex;justify-content:space-between;font-size:13px;font-weight:600}
+.m .top em{font-style:normal;font-size:10px;color:#2563eb;border:1px solid #bfdbfe;border-radius:99px;padding:0 6px;margin-left:6px}
+.m .bar{height:4px;background:#f3f4f6;border-radius:9px;margin:6px 0;overflow:hidden}
+.m .bar i{display:block;height:100%;background:#111827;border-radius:9px;transition:width .5s}
+.m .bar i.low{background:#ef4444}.m .bar i.mid{background:#f59e0b}
+.m p{font-size:12.5px;color:#4b5563}
+#empty{font-size:13px;color:#9ca3af}
+</style>
+</head>
+<body>
+<header>
+  <h1>디자인 연습장<span>직접 배치하고, 채점받고, 고쳐 보세요</span></h1>
+  <div id="dots"></div>
+</header>
+<main>
+  <div class="panel">
+    <section><h2 id="stno"></h2><div id="concept"></div><p id="desc"></p></section>
+    <section><h2>미션</h2><p id="mission"></p></section>
+    <section><h2>힌트</h2><ul id="hints"></ul></section>
+    <section><h2>필수 스프라이트 (클릭해서 꺼내기)</h2><div id="tray"></div></section>
+    <section><h2>자유 장식</h2><div id="deco"></div></section>
+  </div>
+  <div>
+    <div id="props"></div>
+    <div id="stage"><div id="cv"><div id="safe"></div><div id="gv" class="gd"></div><div id="gh" class="gd"></div></div></div>
+    <div class="under"><span>드래그: 이동 · 모서리 핸들: 크기 · 방향키: 미세 이동 · Delete: 삭제</span>
+      <label><input type="checkbox" id="safeT" checked> 여백 가이드</label></div>
+  </div>
+  <div class="panel">
+    <section>
+      <h2>채점</h2>
+      <div id="total">–<small>/ 100</small></div>
+      <div id="stars">☆☆☆</div>
+      <p id="verdict">디자인을 마치면 채점하기를 눌러 주세요. 80점 이상이면 통과입니다.</p>
+      <div class="row" style="margin-top:12px">
+        <button class="btn" id="gradeB">채점하기</button>
+        <button class="btn ghost" id="resetB">비우기</button>
+        <button class="btn ghost" id="nextB" disabled>다음 단계 →</button>
+      </div>
+    </section>
+    <section><h2>교정 리포트</h2><div id="report"><p id="empty">채점하면 항목별 점수와 고칠 점이 여기에 표시되고, 문제가 있는 요소는 캔버스에 빨간 점선으로 표시됩니다.</p></div></section>
+  </div>
+</main>
+<script>
+const W=480,H=600,M=32,$=s=>document.querySelector(s);
+const COLORS=[['#111827',0],['#4b5563',0],['#9ca3af',0],['#e5e7eb',0],['#ffffff',0],
+['#1e3a8a','파랑'],['#2563eb','파랑'],['#dbeafe','파랑'],['#ef4444','빨강'],['#f59e0b','노랑'],['#fef3c7','노랑'],
+['#10b981','초록'],['#8b5cf6','보라'],['#ec4899','분홍'],['#fce7f3','분홍']];
+const FAM=Object.fromEntries(COLORS);
+const ROLE={title:'제목',sub:'부제',body:'본문',label:'라벨',card:'카드',image:'이미지',button:'버튼',panel:'색 면',deco:'장식'};
+const T=(key,role,text,fs,o={})=>({key,kind:'text',role,text,fs,bold:role==='title',color:'#111827',align:'left',...o});
+const I=(key,emoji,w,h,fill,role='image')=>({key,kind:'image',role,text:emoji,w,h,fill});
+const B=(key,text,o={})=>({key,kind:'button',role:'button',text,fs:15,fill:'#111827',color:'#ffffff',...o});
+const P=(key,w,h,fill)=>({key,kind:'shape',role:'panel',w,h,fill});
+const DECO=[{n:'■ 사각형',kind:'shape',role:'deco',w:120,h:120,fill:'#e5e7eb'},{n:'● 원',kind:'shape',role:'deco',w:96,h:96,fill:'#e5e7eb',circle:true},{n:'— 선',kind:'shape',role:'deco',w:160,h:4,fill:'#111827'}];
+
+const STAGES=[
+{c:'정렬',d:'요소들이 보이지 않는 선 하나를 공유하면 화면이 즉시 정돈되어 보입니다. 왼쪽이든 가운데든, 기준선을 정하고 거기에 맞추세요.',
+ m:'동네 카페 「카페 모노」의 오픈 포스터를 만드세요.',h:['드래그하면 파란 안내선이 나타나며 자석처럼 붙습니다.','왼쪽 정렬과 가운데 정렬을 섞지 말고 하나만 고르세요.'],
+ metrics:['align','need','clear'],
+ sprites:[T('t','title','카페 모노 오픈',40),T('s','sub','11월 28일 금요일 · 연남동',18),T('b','body','오픈 기념 아메리카노 1+1\n매일 오전 9시 – 오후 9시',14),I('i','☕',160,160,'#fef3c7'),B('c','오시는 길')]},
+{c:'여백',d:'여백은 남는 공간이 아니라 디자인의 재료입니다. 가장자리에서 충분히 띄우고, 화면을 꽉 채우려는 욕심을 버리세요.',
+ m:'사진전 「빛의 기록」 초대장을 만드세요.',h:['점선으로 표시된 안전 영역 안에 모든 요소를 넣으세요.','도형·이미지는 가장자리에 완전히 붙이는 것(풀 블리드)도 허용됩니다. 어중간하게 걸치는 것만 피하세요.'],
+ metrics:['margin','align','need','clear'],
+ sprites:[T('t','title','빛의 기록',46),T('s','sub','김하늘 사진전',18),T('b','body','2026. 12. 01 – 12. 20\n성수 갤러리 온 · 무료 관람',14),I('i','📷',200,200,'#f3f4f6'),T('l','label','GALLERY ON',12,{bold:true})]},
+{c:'근접성',d:'가까이 있는 것은 한 덩어리로 읽힙니다. 관련 있는 정보끼리는 붙이고, 다른 덩어리와는 확실히 떨어뜨리세요.',
+ m:'재즈 페스티벌 안내문을 만드세요. [제목+부제]와 [일시·장소·가격]이 각각 한 덩어리로 보여야 합니다.',h:['덩어리 사이 간격은 덩어리 안 간격의 2배 이상으로.','요소를 다른 요소 아래로 가져가면 8·16·24·32·48px 간격에 붙습니다.'],
+ metrics:['proximity','align','margin','need','clear'],
+ sprites:[T('t','title','겨울밤 재즈 페스티벌',34,{group:'제목 묶음'}),T('s','sub','도심에서 즐기는 라이브 재즈',16,{group:'제목 묶음'}),T('b1','body','📅 12월 12일 토요일 18:00',15,{group:'정보 묶음'}),T('b2','body','📍 한강 난지공원 특설무대',15,{group:'정보 묶음'}),T('b3','body','🎟 전석 30,000원',15,{group:'정보 묶음'}),I('i','🎷',140,140,'#dbeafe'),B('c','예매하기')]},
+{c:'위계',d:'모든 것이 똑같이 크면 아무것도 눈에 들어오지 않습니다. 가장 중요한 것을 확실히 크게, 덜 중요한 것은 확실히 작게.',
+ m:'여행 뉴스레터 표지를 만드세요. 지금은 모든 글자가 같은 크기입니다. 크기와 굵기로 읽는 순서를 만들어 주세요.',h:['글자 요소의 모서리 핸들을 끌거나 A−/A+로 크기를 바꿉니다.','제목은 부제의 1.5배 이상, 부제는 본문의 1.2배 이상.','본문은 12–18px이 읽기 편합니다.'],
+ metrics:['hierarchy','align','margin','need','clear'],
+ sprites:[T('t','title','제주 한 바퀴',16,{bold:false}),T('s','sub','3가지 코스로 즐기는 1박 2일',16),T('b','body','오름 산책부터 바다 카페까지,\n에디터가 직접 걸어본 길을 소개합니다.',16),T('l','label','TRAVEL LETTER · VOL. 12',16),I('i','🏝',180,160,'#dbeafe')]},
+{c:'대비',d:'글자와 배경의 밝기 차이가 충분해야 읽힙니다. 밝은 배경엔 어두운 글자, 어두운 배경엔 밝은 글자.',
+ m:'겨울 세일 배너를 만드세요. 지금 글자색은 전부 흐릿합니다. 색 면 위에 글자를 올리고 대비를 확보하세요.',h:['기준: 일반 글자 명암비 4.5 : 1, 큰 글자(24px 이상) 3 : 1.','아무것도 선택하지 않으면 배경색을 바꿀 수 있습니다.','버튼은 채우기와 글자색 두 가지를 확인하세요.'],
+ metrics:['contrast','hierarchy','margin','need','clear'],
+ sprites:[P('p',416,240,'#1e3a8a'),T('t','title','WINTER SALE',44,{color:'#9ca3af'}),T('s','sub','최대 50% 할인',20,{color:'#9ca3af'}),T('b','body','12월 1일 – 12월 14일 · 전 품목',14,{color:'#e5e7eb'}),B('c','지금 쇼핑하기',{fill:'#e5e7eb',color:'#ffffff'})]},
+{c:'균형',d:'요소마다 시각적 무게가 있습니다. 크고 진할수록 무겁습니다. 한쪽으로 쏠리지 않도록 좌우 무게를 맞추세요. 꼭 대칭일 필요는 없습니다.',
+ m:'헤드폰 「MONO X」 광고를 만드세요. 큰 이미지와 글 덩어리의 무게 중심이 화면 가운데 오도록 배치하세요.',h:['왼쪽에 글, 오른쪽에 이미지처럼 비대칭으로 균형을 잡을 수 있습니다.','작은 장식 도형을 반대편에 두어 무게를 보정해 보세요.'],
+ metrics:['balance','align','margin','need','clear'],
+ sprites:[I('i','🎧',220,220,'#f3f4f6'),T('t','title','소리에만\n집중하세요',38),T('b','body','노이즈 캔슬링 헤드폰 MONO X\n30시간 연속 재생',14),B('c','자세히 보기')]},
+{c:'반복',d:'같은 역할의 요소는 같은 모양이어야 합니다. 크기·색·간격을 반복하면 통일감이 생기고, 사용자는 규칙을 한 번만 배우면 됩니다.',
+ m:'카페 메뉴판을 만드세요. 카드 3개와 메뉴 이름 3개가 제각각입니다. 크기·색을 통일하고 같은 간격으로 나란히 놓으세요.',h:['카드 3개: 같은 크기, 같은 색, 한 줄, 같은 간격.','메뉴 이름 3개: 같은 글자 크기, 같은 색.','옆 요소 옆으로 끌면 8·16·24·32·48px 간격에 붙습니다.'],
+ metrics:['repeat','align','margin','need','clear'],
+ sprites:[T('t','title','오늘의 메뉴',36),I('c1','☕',96,96,'#dbeafe','card'),I('c2','🥐',128,112,'#fef3c7','card'),I('c3','🍰',112,144,'#fce7f3','card'),T('l1','label','아메리카노 4,000',13),T('l2','label','크루아상 4,500',16,{color:'#2563eb'}),T('l3','label','치즈케이크 6,500',14,{color:'#4b5563'})]},
+{c:'색상',d:'색은 적을수록 강합니다. 무채색을 바탕으로 포인트 색 계열 1–2개만 쓰고, 포인트 색은 좁은 면적에 아껴 쓰세요.',
+ m:'영어 학습 앱 홍보물을 만드세요. 지금은 요소마다 색이 다 다릅니다. 색 계열을 2개 이하로 정리하세요.',h:['같은 계열의 진한 색·연한 색은 한 가지 색으로 칩니다.','검정·회색·흰색은 색 개수에 포함되지 않습니다.','색을 줄여도 글자 대비는 유지해야 합니다.'],
+ metrics:['color','contrast','align','margin','need','clear'],
+ sprites:[T('t','title','하루 10분 영어',40,{color:'#ef4444'}),T('s','sub','출퇴근길에 끝내는 회화 습관',16,{color:'#10b981'}),T('b','body','지금 가입하면 첫 달 무료',14,{color:'#2563eb'}),I('i','📱',180,180,'#fef3c7'),P('p',416,8,'#ec4899'),B('c','무료로 시작하기',{fill:'#8b5cf6'})]},
+{c:'간격 시스템',d:'간격을 그때그때 눈대중으로 정하면 어수선해집니다. 8·16·32처럼 정해 둔 몇 가지 값만 반복해서 쓰면 리듬이 생깁니다.',
+ m:'디자인 세미나 일정표를 만드세요. 요소 사이 간격을 3가지 이하의 값으로만 구성하세요.',h:['묶음 안은 좁게(8–16px), 묶음 사이는 넓게(32–48px).','요소를 다른 요소 아래로 끌면 정해진 간격에 붙습니다.','8px 미만의 간격은 답답해 보입니다.'],
+ metrics:['rhythm','proximity','align','margin','need','clear'],
+ sprites:[T('t','title','디자인 세미나 2026',34,{group:'제목 묶음'}),T('s','sub','작은 팀을 위한 디자인 시스템',16,{group:'제목 묶음'}),T('b1','body','10:00   오프닝 키노트',15,{group:'일정 묶음'}),T('b2','body','11:00   컴포넌트 설계 실습',15,{group:'일정 묶음'}),T('b3','body','13:00   질의응답 · 네트워킹',15,{group:'일정 묶음'}),B('c','참가 신청')]},
+{c:'종합',d:'지금까지 배운 정렬·여백·근접성·위계·대비·균형·색상·간격을 모두 적용할 차례입니다. 모든 항목이 같은 비중으로 채점됩니다.',
+ m:'주말 장터 「연남 플리마켓」 포스터를 자유롭게 디자인하세요.',h:['먼저 기준선과 여백을 정하고, 묶음을 만든 뒤, 크기와 색을 다듬으세요.','장식 도형과 배경색도 자유롭게 써 보세요.'],final:true,
+ metrics:['hierarchy','contrast','align','margin','proximity','balance','color','rhythm','need','clear'],
+ sprites:[T('t','title','연남 플리마켓',40,{group:'제목 묶음'}),T('s','sub','취향을 나누는 주말 장터',16,{group:'제목 묶음'}),T('b1','body','📅 12월 6일 토요일 12:00–18:00',15,{group:'정보 묶음'}),T('b2','body','📍 연남동 경의선숲길 일대',15,{group:'정보 묶음'}),I('i','🧺',200,200,'#fef3c7'),B('c','셀러 신청하기')]}
+];
+
+/* ---------- 상태 ---------- */
+let st={stage:0,els:[],bg:'#ffffff',sel:null},uid=1,bad=new Set(),drag=null,scale=1;
+let save={open:0,best:[]};
+try{save=JSON.parse(localStorage.getItem('designGame'))||save}catch(e){}
+const persist=()=>{try{localStorage.setItem('designGame',JSON.stringify(save))}catch(e){}};
+const cv=$('#cv'),byId=id=>st.els.find(e=>e.id===id),sel=()=>byId(st.sel);
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const esc=s=>String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+
+/* ---------- 색 계산 ---------- */
+const rgb=h=>[1,3,5].map(i=>parseInt(h.substr(i,2),16)/255);
+const lum=h=>{const[r,g,b]=rgb(h).map(v=>v<=.03928?v/12.92:Math.pow((v+.055)/1.055,2.4));return .2126*r+.7152*g+.0722*b};
+const cr=(a,b)=>{const x=lum(a),y=lum(b);return(Math.max(x,y)+.05)/(Math.min(x,y)+.05)};
+
+/* ---------- 그리기 ---------- */
+function styleEl(n,e){
+  n.style.left=e.x+'px';n.style.top=e.y+'px';
+  if(e.kind==='text'){n.style.fontSize=e.fs+'px';n.style.color=e.color;n.style.fontWeight=e.bold?700:400;n.style.textAlign=e.align}
+  else if(e.kind==='button'){n.style.fontSize=e.fs+'px';n.style.color=e.color;n.style.background=e.fill}
+  else{n.style.width=e.w+'px';n.style.height=e.h+'px';n.style.background=e.fill;
+    if(e.kind==='image')n.style.fontSize=Math.min(e.w,e.h)*.5+'px';
+    if(e.circle)n.style.borderRadius='50%'}
+}
+function node(e){return cv.querySelector('.el[data-id="'+e.id+'"]')}
+function measure(){
+  st.els.forEach(e=>{const n=node(e);if(!n)return;
+    if(e.kind==='text'||e.kind==='button'){e.w=n.offsetWidth;e.h=n.offsetHeight}
+    e.x=clamp(e.x,0,Math.max(0,W-e.w));e.y=clamp(e.y,0,Math.max(0,H-e.h));
+    n.style.left=e.x+'px';n.style.top=e.y+'px'});
+}
+function draw(){
+  cv.style.background=st.bg;
+  cv.querySelectorAll('.el').forEach(n=>n.remove());
+  st.els.forEach(e=>{
+    const n=document.createElement('div');
+    n.className='el '+e.kind+(e.id===st.sel?' sel':'')+(bad.has(e.id)?' bad':'');
+    n.dataset.id=e.id;
+    if(e.kind!=='shape'){const s=document.createElement('span');s.textContent=e.text;s.style.pointerEvents='none';n.appendChild(s)}
+    if(e.id===st.sel){const h=document.createElement('i');h.className='hd';n.appendChild(h)}
+    styleEl(n,e);cv.appendChild(n)});
+  measure();
+}
+function refresh(){draw();renderProps();renderTray()}
+
+/* ---------- 좌측 패널 ---------- */
+function renderStage(){
+  const s=STAGES[st.stage];
+  $('#stno').textContent='STAGE '+(st.stage+1)+' / '+STAGES.length;
+  $('#concept').textContent=s.c;$('#desc').textContent=s.d;$('#mission').textContent=s.m;
+  $('#hints').innerHTML=s.h.map(x=>'<li>'+esc(x)+'</li>').join('');
+  $('#dots').innerHTML=STAGES.map((x,i)=>'<button data-i="'+i+'" class="'+(i<=save.open?'open ':'')+((save.best[i]||0)>=80?'done ':'')+(i===st.stage?'cur':'')+'" '+(i>save.open?'disabled':'')+' title="'+x.c+'">'+(i+1)+'</button>').join('');
+  $('#deco').innerHTML=DECO.map((d,i)=>'<button data-d="'+i+'">'+d.n+'</button>').join('');
+  $('#total').innerHTML='–<small>/ 100</small>';$('#stars').textContent='☆☆☆';
+  $('#verdict').textContent='디자인을 마치면 채점하기를 눌러 주세요. 80점 이상이면 통과입니다.'+(save.best[st.stage]?' (최고 '+save.best[st.stage]+'점)':'');
+  $('#report').innerHTML='<p id="empty">채점하면 항목별 점수와 고칠 점이 여기에 표시되고, 문제가 있는 요소는 캔버스에 빨간 점선으로 표시됩니다.</p>';
+  $('#nextB').disabled=!((save.best[st.stage]||0)>=80&&st.stage<STAGES.length-1);
+}
+function renderTray(){
+  const s=STAGES[st.stage];
+  $('#tray').innerHTML=s.sprites.map((p,i)=>{
+    const used=st.els.some(e=>e.key===p.key);
+    return '<button data-s="'+i+'" '+(used?'disabled':'')+'><b>'+ROLE[p.role]+'</b>'+esc(p.text?p.text.split('\n')[0]:p.w+'×'+p.h)+'</button>'}).join('');
+}
+function loadStage(i){st={stage:i,els:[],bg:'#ffffff',sel:null};bad.clear();renderStage();refresh()}
+function addSprite(spec){
+  const e={...spec,id:uid++,x:Math.round((32+Math.random()*180)/8)*8,y:Math.round((32+Math.random()*340)/8)*8};
+  delete e.n;st.els.push(e);st.sel=e.id;bad.clear();refresh();
+}
+$('#tray').onclick=ev=>{const b=ev.target.closest('button');if(b&&!b.disabled)addSprite(STAGES[st.stage].sprites[+b.dataset.s])};
+$('#deco').onclick=ev=>{const b=ev.target.closest('button');if(b)addSprite(DECO[+b.dataset.d])};
+$('#dots').onclick=ev=>{const b=ev.target.closest('button');if(b&&!b.disabled)loadStage(+b.dataset.i)};
+
+/* ---------- 속성 바 ---------- */
+function swatches(prop,cur){return COLORS.map(c=>'<span class="sw'+(c[0]===cur?' on':'')+'" data-p="'+prop+'" data-c="'+c[0]+'" style="background:'+c[0]+'"></span>').join('')}
+function renderProps(){
+  const e=sel(),p=$('#props');
+  if(!e){p.innerHTML='<div class="grp">배경색&nbsp;'+swatches('bg',st.bg)+'</div>';return}
+  let h='';
+  if(e.fill)h+='<div class="grp">채우기&nbsp;'+swatches('fill',e.fill)+'</div>';
+  if(e.color)h+='<div class="grp">글자색&nbsp;'+swatches('color',e.color)+'</div>';
+  h+='<div class="grp">';
+  if(e.fs)h+='<button class="tb" data-a="fs-">A−</button><span>'+e.fs+'px</span><button class="tb" data-a="fs+">A+</button>';
+  if(e.kind==='text'){h+='<button class="tb" data-a="bold">'+(e.bold?'굵게 ✓':'굵게')+'</button>';
+    if(e.text.includes('\n'))h+='<button class="tb" data-a="align">줄 정렬: '+({left:'왼쪽',center:'가운데',right:'오른쪽'}[e.align])+'</button>'}
+  h+='<button class="tb" data-a="front">앞으로</button><button class="tb" data-a="back">뒤로</button><button class="tb" data-a="del">삭제</button></div>';
+  p.innerHTML=h;
+}
+$('#props').onclick=ev=>{
+  const t=ev.target,e=sel();
+  if(t.dataset.c){if(t.dataset.p==='bg')st.bg=t.dataset.c;else if(e)e[t.dataset.p]=t.dataset.c}
+  else if(t.dataset.a&&e){const a=t.dataset.a;
+    if(a==='fs-')e.fs=clamp(e.fs-2,10,72);if(a==='fs+')e.fs=clamp(e.fs+2,10,72);
+    if(a==='bold')e.bold=!e.bold;
+    if(a==='align')e.align={left:'center',center:'right',right:'left'}[e.align];
+    if(a==='front'){st.els=st.els.filter(x=>x!==e);st.els.push(e)}
+    if(a==='back'){st.els=st.els.filter(x=>x!==e);st.els.unshift(e)}
+    if(a==='del'){st.els=st.els.filter(x=>x!==e);st.sel=null}}
+  else return;
+  bad.clear();refresh();
+};
+
+/* ---------- 드래그 & 스냅 ---------- */
+const GAPS=[8,16,24,32,48];
+function snap(e,nx,ny){
+  const o=st.els.filter(x=>x!==e);
+  const cx=[0,M,W/2,W-M,W],cy=[0,M,H/2,H-M,H],xs=[[],[],[]],ys=[[],[],[]];
+  o.forEach(b=>{
+    cx.push(b.x,b.x+b.w/2,b.x+b.w);cy.push(b.y,b.y+b.h/2,b.y+b.h);
+    if(nx<b.x+b.w&&nx+e.w>b.x)GAPS.forEach(g=>{ys[0].push(b.y+b.h+g);ys[2].push(b.y-g)});
+    if(ny<b.y+b.h&&ny+e.h>b.y)GAPS.forEach(g=>{xs[0].push(b.x+b.w+g);xs[2].push(b.x-g)});
+  });
+  const f=(p,s,common,extra)=>{let best=null;[0,s/2,s].forEach((off,i)=>{common.concat(extra[i]).forEach(t=>{const d=t-(p+off);if(Math.abs(d)<6&&(!best||Math.abs(d)<Math.abs(best.d)))best={d,t}})});return best};
+  const bx=f(nx,e.w,cx,xs),by=f(ny,e.h,cy,ys),gv=$('#gv'),gh=$('#gh');
+  gv.style.display=bx?'block':'none';if(bx)gv.style.left=bx.t+'px';
+  gh.style.display=by?'block':'none';if(by)gh.style.top=by.t+'px';
+  return[bx?nx+bx.d:Math.round(nx/8)*8,by?ny+by.d:Math.round(ny/8)*8];
+}
+cv.addEventListener('pointerdown',ev=>{
+  const n=ev.target.closest('.el');
+  if(bad.size)bad.clear();
+  if(!n){st.sel=null;refresh();return}
+  const e=byId(+n.dataset.id),isH=ev.target.classList.contains('hd');
+  st.sel=e.id;refresh();
+  drag={e,mode:isH?'size':'move',px:ev.clientX,py:ev.clientY,x:e.x,y:e.y,w:e.w,h:e.h,fs:e.fs};
+  ev.preventDefault();
+});
+window.addEventListener('pointermove',ev=>{
+  if(!drag)return;
+  const e=drag.e,dx=(ev.clientX-drag.px)/scale,dy=(ev.clientY-drag.py)/scale,n=node(e);
+  if(drag.mode==='move'){
+    const[x,y]=snap(e,clamp(drag.x+dx,0,Math.max(0,W-e.w)),clamp(drag.y+dy,0,Math.max(0,H-e.h)));
+    e.x=clamp(x,0,Math.max(0,W-e.w));e.y=clamp(y,0,Math.max(0,H-e.h));
+  }else if(e.fs){e.fs=clamp(Math.round(drag.fs*(drag.h+dy)/drag.h),10,72)}
+  else{e.w=clamp(Math.round((drag.w+dx)/4)*4,8,W-e.x);e.h=clamp(Math.round((drag.h+dy)/4)*4,4,H-e.y)}
+  styleEl(n,e);measure();
+});
+window.addEventListener('pointerup',()=>{if(!drag)return;drag=null;$('#gv').style.display=$('#gh').style.display='none';refresh()});
+window.addEventListener('keydown',ev=>{
+  const e=sel();if(!e||/INPUT|TEXTAREA/.test(document.activeElement.tagName))return;
+  const k=ev.key,d=ev.shiftKey?8:1;
+  if(k==='Delete'||k==='Backspace'){st.els=st.els.filter(x=>x!==e);st.sel=null}
+  else if(k==='ArrowLeft')e.x-=d;else if(k==='ArrowRight')e.x+=d;else if(k==='ArrowUp')e.y-=d;else if(k==='ArrowDown')e.y+=d;
+  else return;
+  ev.preventDefault();bad.clear();refresh();
+});
+$('#safeT').onchange=ev=>$('#safe').style.display=ev.target.checked?'block':'none';
+function fit(){scale=Math.min(1,(window.innerWidth-32)/W);cv.style.transform='scale('+scale+')';$('#stage').style.width=W*scale+'px';$('#stage').style.height=H*scale+'px'}
+window.addEventListener('resize',fit);
+
+/* ---------- 채점 ---------- */
+const rc=e=>({l:e.x,t:e.y,r:e.x+e.w,b:e.y+e.h,cx:e.x+e.w/2,cy:e.y+e.h/2});
+const gap=(a,b)=>{const A=rc(a),B=rc(b);return Math.hypot(Math.max(0,A.l-B.r,B.l-A.r),Math.max(0,A.t-B.b,B.t-A.b))};
+const range=a=>Math.max(...a)-Math.min(...a);
+const isText=e=>e.kind==='text'||e.kind==='button';
+function under(e){const i=st.els.indexOf(e),c=rc(e);
+  for(let j=i-1;j>=0;j--){const o=st.els[j];if(o.kind==='text'||o.kind==='button')continue;const r=rc(o);
+    if(c.cx>=r.l&&c.cx<=r.r&&c.cy>=r.t&&c.cy<=r.b)return o.fill}
+  return st.bg}
+
+const METRICS={
+need:{name:'필수 요소',fn(els,s){
+  const miss=s.sprites.filter(p=>!els.some(e=>e.key===p.key));
+  return{s:100*(1-miss.length/s.sprites.length),bad:[],tip:miss.length?'아직 꺼내지 않은 필수 스프라이트가 '+miss.length+'개 있어요: '+miss.map(p=>ROLE[p.role]).join(', ')+'. 모두 배치해야 통과할 수 있습니다.':'필수 요소를 모두 배치했어요.'}}},
+clear:{name:'겹침 없음',fn(els){
+  const t=els.filter(isText),b=new Set();let n=0;
+  for(let i=0;i<t.length;i++)for(let j=i+1;j<t.length;j++){const A=rc(t[i]),B=rc(t[j]);
+    if(A.l<B.r-1&&B.l<A.r-1&&A.t<B.b-1&&B.t<A.b-1){n++;b.add(t[i].id);b.add(t[j].id)}}
+  return{s:100-34*n,bad:[...b],tip:n?'글자·버튼끼리 겹친 곳이 '+n+'군데 있어요. 겹치면 둘 다 읽을 수 없습니다.':'글자끼리 겹치지 않아요.'}}},
+align:{name:'정렬',fn(els){
+  const n=els.length;if(n<2)return{s:0,bad:[],tip:'요소를 2개 이상 배치해 주세요.'};
+  const R=els.map(rc),b=[];let maxG=1;
+  els.forEach((e,i)=>{let ok=Math.abs(R[i].cx-W/2)<=1.5;
+    ['l','cx','r'].forEach(k=>{const c=R.filter(o=>Math.abs(o[k]-R[i][k])<=1.5).length;if(c>1)ok=true;maxG=Math.max(maxG,c)});
+    if(!ok)b.push(e.id)});
+  const need=Math.ceil(n*.6),sc=60*(n-b.length)/n+40*Math.min(1,maxG/need);
+  let tip='모든 요소가 기준선을 공유하고 있어요. 깔끔합니다.';
+  if(b.length)tip=b.length+'개 요소가 어떤 기준선에도 맞지 않아요. 다른 요소의 왼쪽·가운데·오른쪽 끝에 맞추면 파란 안내선이 나타납니다.';
+  else if(maxG<need)tip='기준선이 여러 개로 흩어져 있어요. 한 기준선에 '+need+'개 이상의 요소를 모아 주축을 만들어 보세요 (현재 최대 '+maxG+'개).';
+  return{s:sc,bad:b,tip}}},
+margin:{name:'여백',fn(els){
+  const n=els.length;if(!n)return{s:0,bad:[],tip:'요소를 배치해 주세요.'};
+  const b=[];let area=0;
+  els.forEach(e=>{const r=rc(e),bleed=e.kind==='shape'||e.kind==='image';area+=e.w*e.h;
+    if([r.l,r.t,W-r.r,H-r.b].some(d=>d<M-1&&!(bleed&&d<=2)))b.push(e.id)});
+  const cov=area/(W*H);let den=100,dt='';
+  if(cov<.08){den=cov/.08*100;dt=' 화면이 너무 비어 보여요. 주요 요소를 조금 키워 보세요.'}
+  else if(cov>.6){den=Math.max(0,100-(cov-.6)*300);dt=' 요소가 화면을 너무 많이 차지해 답답해요. 크기를 줄여 숨 쉴 공간을 만드세요.'}
+  return{s:70*(n-b.length)/n+.3*den,bad:b,tip:(b.length?b.length+'개 요소가 가장자리 '+M+'px 안전 영역을 침범했어요. 점선 안쪽으로 옮기거나, 도형·이미지는 가장자리에 완전히 붙이세요.':'가장자리 여백이 잘 지켜졌어요.')+dt}}},
+proximity:{name:'근접성',fn(els){
+  const g={};els.filter(e=>e.group).forEach(e=>(g[e.group]=g[e.group]||[]).push(e));
+  const names=Object.keys(g).filter(k=>g[k].length>1);
+  if(names.length<2)return{s:0,bad:[],tip:'묶음을 이루는 요소들을 먼저 배치해 주세요.'};
+  const b=[],tips=[];let sum=0;
+  names.forEach(k=>{const mem=g[k],oth=els.filter(e=>e.group&&e.group!==k);
+    const intra=Math.max(...mem.map(a=>Math.min(...mem.filter(x=>x!==a).map(x=>gap(a,x)))));
+    const inter=Math.min(...mem.map(a=>Math.min(...oth.map(x=>gap(a,x)))));
+    let sc=clamp((inter/Math.max(intra,4)-1),0,1)*100;
+    if(intra>48){sc*=.6;tips.push('「'+k+'」 안의 요소들이 너무 멀어요('+Math.round(intra)+'px). 더 붙이세요.')}
+    if(sc<100){mem.forEach(e=>b.push(e.id));tips.push('「'+k+'」: 묶음 안 간격 '+Math.round(intra)+'px, 다른 묶음과의 간격 '+Math.round(inter)+'px. 바깥 간격이 안쪽의 2배 이상이어야 덩어리로 보입니다.')}
+    sum+=sc});
+  return{s:sum/names.length,bad:b,tip:tips.length?tips.join(' '):'관련 정보끼리 잘 묶였고 묶음 사이도 충분히 떨어져 있어요.'}}},
+hierarchy:{name:'위계',fn(els){
+  const t=els.find(e=>e.role==='title'),s=els.find(e=>e.role==='sub'),bs=els.filter(e=>e.kind==='text'&&(e.role==='body'||e.role==='label'));
+  if(!t||!bs.length)return{s:0,bad:[],tip:'제목과 본문을 배치해 주세요.'};
+  const bf=Math.max(...bs.map(e=>e.fs)),mid=s?s.fs:bf*1.25,tips=[],b=[];
+  let sc=40*clamp((t.fs/mid-1)/.5,0,1);
+  if(t.fs/mid<1.5){tips.push('제목('+t.fs+'px)이 '+(s?'부제':'본문')+'에 비해 충분히 크지 않아요. 1.5배 이상으로 키우세요.');b.push(t.id)}
+  if(s){sc+=25*clamp((s.fs/bf-1)/.2,0,1);if(s.fs/bf<1.2){tips.push('부제('+s.fs+'px)와 본문('+bf+'px)의 차이가 작아요. 1.2배 이상 벌리세요.');b.push(s.id)}}else sc+=25;
+  if(t.bold)sc+=10;else tips.push('제목을 굵게 하면 더 확실히 눈에 띕니다.');
+  if(t.y<Math.min(...bs.filter(e=>e.role==='body').map(e=>e.y).concat([H])))sc+=10;else tips.push('제목이 본문보다 아래에 있어요. 먼저 읽혀야 할 것을 위에 두세요.');
+  const badB=bs.filter(e=>e.fs<12||e.fs>18);
+  if(!badB.length)sc+=15;else{tips.push('본문·라벨은 12–18px이 적당합니다.');badB.forEach(e=>b.push(e.id))}
+  return{s:sc,bad:b,tip:tips.length?tips.join(' '):'크기 단계가 분명해서 읽는 순서가 자연스러워요.'}}},
+contrast:{name:'대비',fn(els){
+  const t=els.filter(isText);if(!t.length)return{s:0,bad:[],tip:'글자 요소를 배치해 주세요.'};
+  const b=[],tips=[];let sum=0;
+  t.forEach(e=>{const bgc=e.kind==='button'?e.fill:under(e),r=cr(e.color,bgc),th=e.fs>=24?3:4.5;
+    sum+=Math.min(1,r/th);
+    if(r<th){b.push(e.id);tips.push(ROLE[e.role]+' '+r.toFixed(1)+' : 1 (기준 '+th+')')}});
+  return{s:Math.pow(sum/t.length,1.5)*100,bad:b,tip:tips.length?'명암비가 부족한 글자: '+tips.join(', ')+'. 배경이 밝으면 더 어두운 글자색, 어두우면 더 밝은 글자색을 쓰세요.':'모든 글자가 배경과 충분히 대비됩니다.'}}},
+balance:{name:'균형',fn(els){
+  if(els.length<2)return{s:0,bad:[],tip:'요소를 배치해 주세요.'};
+  let sw=0,sx=0,sy=0;
+  els.forEach(e=>{const r=rc(e),k=e.kind==='text'?.5:e.kind==='image'?.6:e.kind==='button'?1:.15+.85*Math.abs(lum(e.fill)-lum(st.bg)),w=e.w*e.h*k;sw+=w;sx+=w*r.cx;sy+=w*r.cy});
+  const ox=(sx/sw-W/2)/(W/2),oy=(sy/sw-H/2)/(H/2);
+  const sc=100-Math.max(0,Math.abs(ox)-.06)*280-Math.max(0,Math.abs(oy)-.2)*150,tips=[];
+  if(Math.abs(ox)>.06)tips.push('무게 중심이 '+(ox<0?'왼쪽':'오른쪽')+'으로 '+Math.round(Math.abs(ox)*100)+'% 쏠렸어요. 반대편에 이미지나 도형을 두거나 무거운 요소를 가운데로 옮기세요.');
+  if(Math.abs(oy)>.2)tips.push('전체가 너무 '+(oy<0?'위':'아래')+'에 몰려 있어요.');
+  return{s:sc,bad:[],tip:tips.length?tips.join(' '):'좌우 무게가 잘 잡혀 안정적으로 보여요.'}}},
+repeat:{name:'반복',fn(els){
+  const g={};els.filter(e=>e.role!=='deco').forEach(e=>(g[e.role]=g[e.role]||[]).push(e));
+  const ks=Object.keys(g).filter(k=>g[k].length>1);
+  if(!ks.length)return{s:0,bad:[],tip:'같은 역할의 요소(카드, 라벨)를 여러 개 배치해 주세요.'};
+  let pass=0,tot=0;const b=new Set(),tips=[];
+  ks.forEach(k=>{const m=g[k],tx=m[0].kind==='text',nm=ROLE[k];
+    const fail=msg=>{tips.push(nm+': '+msg);m.forEach(e=>b.add(e.id))};
+    tot++;if(tx?range(m.map(e=>e.fs))===0&&m.every(e=>e.bold===m[0].bold):range(m.map(e=>e.w))<=2&&range(m.map(e=>e.h))<=2)pass++;else fail('크기가 서로 달라요');
+    tot++;if(m.every(e=>(tx?e.color:e.fill)===(tx?m[0].color:m[0].fill)))pass++;else fail('색이 서로 달라요');
+    const R=m.map(rc),row=range(R.map(r=>r.t))<=2||range(R.map(r=>r.cy))<=2,col=range(R.map(r=>r.l))<=2||range(R.map(r=>r.cx))<=2;
+    tot++;if(row||col)pass++;else fail('한 줄(가로 또는 세로)로 나란히 놓이지 않았어요');
+    if(m.length>2){tot++;
+      if(row||col){const a=R.slice().sort((p,q)=>row?p.l-q.l:p.t-q.t),gs=[];
+        for(let i=1;i<a.length;i++)gs.push(row?a[i].l-a[i-1].r:a[i].t-a[i-1].b);
+        if(range(gs)<=3)pass++;else fail('사이 간격이 일정하지 않아요('+gs.map(Math.round).join(', ')+'px)')}}});
+  return{s:100*pass/tot,bad:[...b],tip:tips.length?tips.join(' · ')+'. 같은 역할이면 같은 규칙을 적용하세요.':'같은 역할의 요소들이 같은 크기·색·간격으로 반복되고 있어요.'}}},
+color:{name:'색상',fn(els){
+  if(!els.length)return{s:0,bad:[],tip:'요소를 배치해 주세요.'};
+  const fam=new Set();let area=0;const add=c=>{if(c&&FAM[c])fam.add(FAM[c])};
+  add(st.bg);els.forEach(e=>{add(e.fill);add(e.color);if(e.fill&&FAM[e.fill])area+=e.w*e.h});
+  const n=fam.size,ps=[55,100,100,70,45,25,10][Math.min(n,6)],ratio=area/(W*H);
+  let as=30,tips=[];
+  if(n===0)tips.push('포인트 색이 하나도 없어요. 버튼이나 제목 등 한 곳에 색을 넣어 시선을 끌어 보세요.');
+  else if(n>2)tips.push('색 계열을 '+n+'개('+[...fam].join(', ')+') 쓰고 있어요. 2개 이하로 줄이고 나머지는 무채색으로 바꾸세요.');
+  if(n&&!FAM[st.bg]){if(ratio>.45){as=5;tips.push('포인트 색이 화면의 '+Math.round(ratio*100)+'%를 차지해요. 넓은 면은 무채색이나 연한 색으로, 포인트는 좁게 쓰세요.')}}
+  if(n===0)as=10;
+  return{s:ps*.7+as,bad:[],tip:tips.length?tips.join(' '):'절제된 팔레트예요. 색이 적으니 포인트가 살아납니다.'}}},
+rhythm:{name:'간격 시스템',fn(els){
+  const c=els.filter(e=>e.kind!=='shape'),gs=[],b=new Set();let cramped=0;
+  c.forEach(a=>{let best=null,bb=null;const A=rc(a);
+    c.forEach(o=>{if(o===a)return;const B=rc(o);
+      if(A.l<B.r&&B.l<A.r&&B.t>=A.b-1){const g=B.t-A.b;if(best===null||g<best){best=g;bb=o}}});
+    if(best!==null&&best<160){gs.push(best);if(best<7){cramped++;b.add(a.id);b.add(bb.id)}}
+    let hb=null;c.forEach(o=>{if(o===a||o.role!==a.role)return;const B=rc(o);
+      if(A.t<B.b&&B.t<A.b&&B.l>=A.r-1){const g=B.l-A.r;if(hb===null||g<hb)hb=g}});
+    if(hb!==null&&hb<160)gs.push(hb)});
+  if(gs.length<3)return{s:0,bad:[],tip:'요소를 위아래로 쌓아 간격을 3곳 이상 만들어 주세요.'};
+  gs.sort((x,y)=>x-y);const cl=[gs[0]];gs.forEach(g=>{if(g-cl[cl.length-1]>3)cl.push(g)});
+  const sc=[100,100,100,75,50,30][Math.min(cl.length-1,5)]-12*cramped,tips=[];
+  if(cl.length>3)tips.push('간격 값이 '+cl.length+'종류('+cl.map(Math.round).join(', ')+'px)나 됩니다. 3종류 이하로 통일하세요.');
+  if(cramped)tips.push('8px보다 좁은 간격이 '+cramped+'곳 있어 답답해 보여요.');
+  return{s:sc,bad:[...b],tip:tips.length?tips.join(' '):'간격이 '+cl.map(Math.round).join(', ')+'px로 정리되어 리듬감이 있어요.'}}}
+};
+
+function grade(){
+  const s=STAGES[st.stage];bad.clear();st.sel=null;
+  const res=s.metrics.map((m,i)=>{const r=METRICS[m].fn(st.els,s);r.s=clamp(Math.round(r.s),0,100);r.name=METRICS[m].name;r.focus=i===0&&!s.final;r.w=r.focus?3:1;r.key=m;return r});
+  let total=Math.round(res.reduce((a,r)=>a+r.s*r.w,0)/res.reduce((a,r)=>a+r.w,0));
+  const need=res.find(r=>r.key==='need');if(need.s<100)total=Math.min(total,79);
+  res.forEach(r=>{if(r.s<100)r.bad.forEach(id=>bad.add(id))});
+  $('#total').innerHTML=total+'<small>/ 100</small>';
+  const stars=total>=97?3:total>=90?2:total>=80?1:0;
+  $('#stars').textContent='★'.repeat(stars)+'☆'.repeat(3-stars);
+  const worst=res.filter(r=>r.s<100).sort((a,b)=>(100-b.s)*b.w-(100-a.s)*a.w)[0];
+  $('#verdict').textContent=total>=80?(stars===3?'완벽해요! 이 원칙을 완전히 이해했습니다.':'통과! '+(worst?'「'+worst.name+'」을 다듬으면 더 높은 점수를 받을 수 있어요.':'')):'아직 '+(80-total)+'점 부족해요. '+(worst?'먼저 「'+worst.name+'」부터 고쳐 보세요.':'');
+  $('#report').innerHTML=res.map(r=>'<div class="m"><div class="top"><span>'+r.name+(r.focus?'<em>이번 단계 핵심 ×3</em>':'')+'</span><span>'+r.s+'</span></div><div class="bar"><i class="'+(r.s<50?'low':r.s<80?'mid':'')+'" style="width:'+r.s+'%"></i></div><p>'+esc(r.tip)+'</p></div>').join('');
+  save.best[st.stage]=Math.max(save.best[st.stage]||0,total);
+  if(total>=80&&st.stage<STAGES.length-1)save.open=Math.max(save.open,st.stage+1);
+  persist();
+  $('#nextB').disabled=!(save.best[st.stage]>=80&&st.stage<STAGES.length-1);
+  const cur=st.stage;$('#dots').querySelectorAll('button').forEach((b,i)=>{b.disabled=i>save.open;b.className=(i<=save.open?'open ':'')+((save.best[i]||0)>=80?'done ':'')+(i===cur?'cur':'')});
+  refresh();
+}
+$('#gradeB').onclick=grade;
+$('#resetB').onclick=()=>loadStage(st.stage);
+$('#nextB').onclick=()=>loadStage(st.stage+1);
+
+fit();loadStage(Math.min(save.open,STAGES.length-1));
+</script>
+</body>
+</html>
